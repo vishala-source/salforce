@@ -1,0 +1,33 @@
+<template>
+    <lightning-card title="Library Management System">
+        <div class="slds-p-around_medium">
+            <lightning-button label="View Books" onclick={handleViewBooks}></lightning-button>
+            <lightning-button label="View Members" onclick={handleViewMembers} class="slds-m-left_small"></lightning-button>
+            <lightning-button label="View Transactions" onclick={handleViewTransactions} class="slds-m-left_small"></lightning-button>
+        </div>
+        
+        <template if:true={showBooks}>
+            <lightning-datatable 
+                key-field="Id"
+                data={books}
+                columns={bookColumns}>
+            </lightning-datatable>
+        </template>
+
+        <template if:true={showMembers}>
+            <lightning-datatable 
+                key-field="Id"
+                data={members}
+                columns={memberColumns}>
+            </lightning-datatable>
+        </template>
+
+        <template if:true={showTransactions}>
+            <lightning-datatable 
+                key-field="Id"
+                data={transactions}
+                columns={transactionColumns}>
+            </lightning-datatable>
+        </template>
+    </lightning-card>
+</template>

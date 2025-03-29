@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>55.0</apiVersion> <!-- Adjust the API version as needed -->
+    <isExposed>true</isExposed>
+    <targets>
+        <!-- Keep the existing Experience Cloud targets -->
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+
+        <!-- Add new valid targets for other pages -->
+        <target>lightning__AppPage</target> <!-- For use in Experience Cloud app pages -->
+        <target>lightning__RecordPage</target> <!-- For use in record pages -->
+        <target>lightning__HomePage</target> <!-- For use in home pages -->
+    </targets>
+</LightningComponentBundle>
