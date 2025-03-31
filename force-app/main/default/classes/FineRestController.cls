@@ -5,25 +5,16 @@ public without sharing class FineRestController {
         List<Fine__c> finesList = new List<Fine__c>();
 
         try {
-            // Get the currently logged-in user's name
-            String loggedInUserName = UserInfo.getName(); 
+            // Get the currently logged-in user ID
+            Id loggedInUserId = UserInfo.getUserId(); 
 
-            if (String.isBlank(loggedInUserName)) {
-                return finesList; // Return empty list instead of throwing an error
+            if (loggedInUserId == null) {
+                return finesList; // Return empty list if no user is found
             }
 
-            // Fetch the Library Member record associated with the logged-in user's name
-            List<Library_Member__c> members = [
-                SELECT Id FROM Library_Member__c WHERE Member_Name__c = :loggedInUserName
-            ];
-
-            if (members.isEmpty()) {
-                return finesList; // No library member found
-            }
-
-            // Fetch Library Transactions linked to this Library Member
+            // Fetch Library Transactions linked to this User
             List<Library_Transaction__c> transactions = [
-                SELECT Id FROM Library_Transaction__c WHERE Library_Member__c IN :members
+                SELECT Id FROM Library_Transaction__c WHERE User__c = :loggedInUserId
             ];
 
             if (transactions.isEmpty()) {

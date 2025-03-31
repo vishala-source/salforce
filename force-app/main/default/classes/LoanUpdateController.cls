@@ -14,22 +14,12 @@ public without sharing class LoanUpdateController {
 
             System.debug('=== Logged-In User ID: ' + loggedInUserId);
 
-            // ✅ Fetch the Library Member associated with the logged-in user
-            List<Library_Member__c> members = [
-                SELECT Id FROM Library_Member__c WHERE User__c = :loggedInUserId
-            ];
-
-            if (members.isEmpty()) {
-                return transactions; // No transactions if no Library Member found
-            }
-
-            // ✅ Fetch Library Transactions linked to this Library Member
+            // ✅ Fetch transactions associated with the logged-in User
             transactions = [
-                SELECT Id, Name, Status__c, Issue_Date__c, Due_Date__c, Return_Date__c,
-                       Book__c, Book__r.Book_Name__c,
-                       (SELECT Fine_Amount__c, Fine_Status__c FROM Fines__r) // Fetch fine details
-                FROM Library_Transaction__c
-                WHERE Library_Member__c IN :members
+                SELECT Id, Status__c, Issue_Date__c, Due_Date__c, Return_Date__c, 
+                       Book__c, Book__r.Name  
+                FROM Library_Transaction__c 
+                WHERE User__c = :loggedInUserId
             ];
 
             System.debug('=== Retrieved Transactions: ' + transactions);
