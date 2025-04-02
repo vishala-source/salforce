@@ -92,4 +92,5 @@ wiredTransactions({ error, data }) {
         this.showBooks = false;
         this.showTransactions = true;
     }
+   
 }
