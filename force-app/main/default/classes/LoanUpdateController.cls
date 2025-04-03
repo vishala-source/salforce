@@ -21,6 +21,7 @@ public without sharing class LoanUpdateController {
                 FROM Library_Transaction__c 
                 WHERE User__c = :loggedInUserId
             ];
+            // Loan is updated
 
             System.debug('=== Retrieved Transactions: ' + transactions);
 
