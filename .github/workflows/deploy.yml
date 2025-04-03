@@ -39,6 +39,7 @@ jobs:
             --username ${{ secrets.SF_USERNAME }} \
             --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY }}")
 
+
       # Step 5: Get the list of changed files
       - name: Identify changed files
         id: changed_files
