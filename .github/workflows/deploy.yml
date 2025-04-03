@@ -54,14 +54,14 @@ jobs:
           while IFS= read -r file; do
             if [[ -f "$file" ]]; then
               echo "Deploying: $file"
-              sf project deploy start --source-dir "$file" --target-org ${{ secrets.DEPLOYMENT_USER_NAME }}
+              sf project deploy start --source-dir "$file" --target-org ${{ secrets.SF_USERNAME }}
             fi
           done < changed_files.txt
 
       # Step 7: Logout from Salesforce
       - name: Logout from Salesforce
         run: |
-          sf org logout --target-org ${{ secrets.DEPLOYMENT_USER_NAME }} --no-prompt
+          sf org logout --target-org ${{ secrets.SF_USERNAME }} --no-prompt
 
       # Step 8: Print Success Message
       - name: Deployment Successful
