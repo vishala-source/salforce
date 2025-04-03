@@ -1,29 +1,68 @@
-name: Deploy to Salesforce
+name: Deploy Changed Files to Salesforce
 
 on:
   push:
     branches:
-      - main  # Runs when code is pushed to the main branch
+      - main  # Runs on push to main branch
+    paths:
+      - 'force-app/main/default/**'  # Triggers only if files inside this folder change
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout repository with full history
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full commit history is available
 
+      # Step 2: Set up Node.js (if required for Salesforce CLI)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install Salesforce CLI
       - name: Install Salesforce CLI
         run: |
-          npm install --global sfdx-cli
-          sfdx --version
+          npm install --global @salesforce/cli
 
-      - name: Authenticate with Salesforce
+      # Step 4: Authenticate with Salesforce using JWT
+      - name: Authenticate with JWT
         run: |
-          export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
-          echo "${{ secrets.SF_AUTH_URL }}" > ./sfdx_auth_url.txt
-          sfdx auth:sfdxurl:store -f ./sfdx_auth_url.txt -a myOrg
-          rm ./sfdx_auth_url.txt
+          echo "${{ secrets.JWT_SERVER_KEY }}" > server.key
+          sf org login jwt \
+            --instance-url ${{ vars.INSTANCE_URL }} \
+            --client-id ${{ secrets.CONSUMER_KEY }} \
+            --username ${{ secrets.DEPLOYMENT_USER_NAME }} \
+            --jwt-key-file server.key
 
-      - name: Deploy metadata to Salesforce
+      # Step 5: Get the list of changed files
+      - name: Identify changed files
+        id: changed_files
         run: |
-          sfdx force:source:deploy -p force-app -u myOrg --wait 10
+          git diff --name-only HEAD~1 > changed_files.txt || echo "No changes found"
+          cat changed_files.txt
+
+      # Step 6: Deploy only changed files
+      - name: Deploy changed files to Salesforce
+        if: success()
+        run: |
+          while IFS= read -r file; do
+            if [[ -f "$file" ]]; then
+              echo "Deploying: $file"
+              sf project deploy start --source-dir "$file" --target-org ${{ secrets.DEPLOYMENT_USER_NAME }}
+            fi
+          done < changed_files.txt
+
+      # Step 7: Logout from Salesforce
+      - name: Logout from Salesforce
+        run: |
+          sf org logout --target-org ${{ secrets.DEPLOYMENT_USER_NAME }} --no-prompt
+
+      # Step 8: Print Success Message
+      - name: Deployment Successful
+        run: echo "✅ Deployment to Salesforce completed successfully!"
