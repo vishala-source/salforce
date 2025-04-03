@@ -35,9 +35,9 @@ jobs:
         run: |
           sf org login jwt \
             --instance-url ${{ vars.INSTANCE_URL }} \
-            --client-id ${{ secrets.CONSUMER_KEY }} \
-            --username ${{ secrets.DEPLOYMENT_USER_NAME }} \
-            --jwt-key-file <(echo "${{ secrets.JWT_SERVER_KEY }}")
+            --client-id ${{ secrets.SF_CONSUMER_KEY }} \
+            --username ${{ secrets.SF_USERNAME }} \
+            --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY }}")
             
       # Step 5: Get the list of changed files
       - name: Identify changed files
