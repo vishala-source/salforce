@@ -13,6 +13,7 @@ public without sharing class LoanStatusUpdater {
                 System.debug('No overdue transactions found.');
                 return;
             }
+            // transaction for the libary mamber
 
             for (Library_Transaction__c trans : overdueTransactions) { // Changed variable name
                 trans.Status__c = 'Overdue';
