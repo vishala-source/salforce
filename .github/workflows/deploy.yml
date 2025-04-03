@@ -1,0 +1,28 @@
+name: Deploy to Salesforce
+
+on:
+  push:
+    branches:
+      - main  # Runs when code is pushed to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global sfdx-cli
+          sfdx --version
+
+      - name: Authenticate with Salesforce
+        run: |
+          echo ${{ secrets.SF_AUTH_URL }} > ./sfdx_auth_url.txt
+          sfdx auth:sfdxurl:store -f ./sfdx_auth_url.txt -a myOrg
+          rm ./sfdx_auth_url.txt
+
+      - name: Deploy metadata to Salesforce
+        run: |
+          sfdx force:source:deploy -p force-app -u myOrg --wait 10
