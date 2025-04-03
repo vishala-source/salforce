@@ -34,6 +34,8 @@ trigger ApplyFineOnOverdueReturn on Library_Transaction__c (after update) {
         }
     }
 
+    // added commant for varifying CI/CD deployment 
+
     // Insert fines outside the loop
     if (!finesToInsert.isEmpty()) {
         insert finesToInsert;

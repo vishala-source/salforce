@@ -33,13 +33,12 @@ jobs:
       # Step 4: Authenticate with Salesforce using JWT
       - name: Authenticate with JWT
         run: |
-          echo "${{ secrets.JWT_SERVER_KEY }}" > server.key
           sf org login jwt \
             --instance-url ${{ vars.INSTANCE_URL }} \
             --client-id ${{ secrets.CONSUMER_KEY }} \
             --username ${{ secrets.DEPLOYMENT_USER_NAME }} \
-            --jwt-key-file server.key
-
+            --jwt-key-file <(echo "${{ secrets.JWT_SERVER_KEY }}")
+            
       # Step 5: Get the list of changed files
       - name: Identify changed files
         id: changed_files
