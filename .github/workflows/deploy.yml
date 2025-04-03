@@ -35,7 +35,7 @@ jobs:
         run: |
           sf org login jwt \
             --instance-url ${{ vars.INSTANCE_URL }} \
-            --client-id ${{ secrets.SF_CONSUMER_KEY }} \
+            --client-id ${{ secrets.SF_CONSUMER_SECRET }} \
             --username ${{ secrets.SF_USERNAME }} \
             --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY }}")
             
