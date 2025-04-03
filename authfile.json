@@ -1,0 +1,12 @@
+{
+  "status": 0,
+  "result": {
+    "id": "00DgK000000eC2TUAU",
+    "accessToken": "00DgK000000eC2T!AQEAQOQBZ7UzZIE9FlBhob9yK2kS7MA7HFM0vR6zdShUEXOL2r8sfUuW2Do4IhkshFjM.wwHMdV_4jMjpv0rLQ5.SZLfAclO",
+    "instanceUrl": "https://orgfarm-65833e947b-dev-ed.develop.my.salesforce.com",
+    "username": "vishalaharikantra098311@agentforce.com",
+    "clientId": "PlatformCLI",
+    "connectedStatus": "Connected",
+    "alias": "MyOrg"
+  }
+}
