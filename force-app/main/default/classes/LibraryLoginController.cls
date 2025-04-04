@@ -10,6 +10,7 @@ public without sharing class LibraryLoginController {
                 WHERE Email_Address__c = :email 
                 LIMIT 1
             ];
+            // Login credentail
 
             if (members.isEmpty()) {
                 System.debug('LOGIN FAILED: No user found.');
