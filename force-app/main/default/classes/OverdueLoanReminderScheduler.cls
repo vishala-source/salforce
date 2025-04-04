@@ -21,6 +21,7 @@ global class OverdueLoanReminderScheduler implements Schedulable {
                     userIds.add(trans.User__c);
                 }
             }
+            // changes made
 
             // Fetch user emails
             Map<Id, String> userEmails = new Map<Id, String>();
