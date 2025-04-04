@@ -4,6 +4,7 @@ public with sharing class AgentforceHomepageController {
         String docName='agentforceHomepageBanner' + ((index>0)?index+'':'');
         return getBannerUrlFromName(docName);
     }
+    
 
     private static String getBannerUrlFromName(String docName) {
         try {

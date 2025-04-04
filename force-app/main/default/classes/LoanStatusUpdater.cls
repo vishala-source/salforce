@@ -8,6 +8,7 @@ public without sharing class LoanStatusUpdater {
                 FROM Library_Transaction__c 
                 WHERE Due_Date__c < TODAY AND Status__c != 'Returned'
             ];
+            // Loan status update 
 
             if (overdueTransactions.isEmpty()) {
                 System.debug('No overdue transactions found.');
