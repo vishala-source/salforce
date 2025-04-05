@@ -1,0 +1,67 @@
+name: Deploy Changed Files to Production
+
+on:
+  push:
+    branches:
+      - production  # Runs on push to production branch
+    paths:
+      - 'force-app/main/default/**'  # Only trigger when files in this folder are changed
+  workflow_dispatch:  # Allow manual trigger too
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install Salesforce CLI
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global @salesforce/cli
+
+      # Step 4: Authenticate with Salesforce (Production)
+      - name: Authenticate with JWT
+        run: |
+          sf org login jwt \
+            --instance-url ${{ vars.INSTANCE_URL_PROD }} \
+            --client-id ${{ secrets.SF_CONSUMER_SECRET_PROD }} \
+            --username ${{ secrets.SF_USERNAME_PROD }} \
+            --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY_PROD }}")
+
+      # Step 5: Get the list of changed files
+      - name: Identify changed files
+        id: changed_files
+        run: |
+          git diff --name-only HEAD~1 > changed_files.txt || echo "No changes found"
+          cat changed_files.txt
+
+      # Step 6: Deploy only changed files
+      - name: Deploy changed files to Production
+        if: success()
+        run: |
+          while IFS= read -r file; do
+            if [[ -f "$file" ]]; then
+              echo "Deploying: $file"
+              sf project deploy start --source-dir "$file" --target-org ${{ secrets.SF_USERNAME_PROD }}
+            fi
+          done < changed_files.txt
+
+      # Step 7: Logout from Salesforce
+      - name: Logout from Salesforce
+        run: |
+          sf org logout --target-org ${{ secrets.SF_USERNAME_PROD }} --no-prompt
+
+      # Step 8: Print Success Message
+      - name: Deployment Successful
+        run: echo "✅ Deployment to Production completed successfully!"
