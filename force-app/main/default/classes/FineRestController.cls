@@ -35,8 +35,7 @@ public without sharing class FineRestController {
             System.debug('=== ERROR: ' + e.getMessage());
             throw new AuraHandledException('An error occurred while fetching fines');
         }
-        // list of fine genarated 
-
+        // fine list added
         return finesList;
     }
 }
