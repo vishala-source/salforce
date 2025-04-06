@@ -51,12 +51,13 @@ jobs:
         if: success()
         run: |
           while IFS= read -r file; do
-            if [[ -f "$file" ]]; then
+            if [[ "$file" == force-app/* && -f "$file" ]]; then
               echo "Deploying: $file"
               sf project deploy start --source-dir "$file" --target-org ${{ secrets.SF_USERNAME_PROD }}
+            else
+              echo "⏩ Skipping non-deployable file: $file"
             fi
           done < changed_files.txt
-
       # Step 7: Logout from Salesforce
       - name: Logout from Salesforce
         run: |
