@@ -1,8 +1,8 @@
 public without sharing class LoanUpdateController {
 
     @AuraEnabled(cacheable=true)
-    public static List<Library_Transaction__c> getTransactionsByUser() {
-        List<Library_Transaction__c> transactions = new List<Library_Transaction__c>();
+    public static List<Loan__c> getLoansByUser() {
+        List<Loan__c> loans = new List<Loan__c>();
 
         try {
             // ✅ Get the currently logged-in User
@@ -14,22 +14,21 @@ public without sharing class LoanUpdateController {
 
             System.debug('=== Logged-In User ID: ' + loggedInUserId);
 
-            // ✅ Fetch transactions associated with the logged-in User
-            transactions = [
-                SELECT Id, Status__c, Issue_Date__c, Due_Date__c, Return_Date__c, 
+            // ✅ Fetch loans associated with the logged-in User
+            loans = [
+                SELECT Id, Loan_Status__c, Loan_Date__c, Due_Date__c, Return_Date__c, 
                        Book__c, Book__r.Name  
-                FROM Library_Transaction__c 
+                FROM Loan__c 
                 WHERE User__c = :loggedInUserId
             ];
-            // Loan is updated
 
-            System.debug('=== Retrieved Transactions: ' + transactions);
+            System.debug('=== Retrieved Loans: ' + loans);
 
         } catch (Exception e) {
             System.debug('=== ERROR: ' + e.getMessage());
-            throw new AuraHandledException('Error fetching transactions: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching loans: ' + e.getMessage());
         }
 
-        return transactions;
+        return loans;
     }
 }

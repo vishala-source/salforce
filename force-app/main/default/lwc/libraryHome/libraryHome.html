@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Library Management System">
+        <div class="slds-p-around_medium">
+            <lightning-button label="View Books" onclick={handleBooksClick}></lightning-button>
+            <lightning-button label="View Loans" onclick={handleLoansClick} class="slds-m-left_small"></lightning-button>
+            <lightning-button label="View Fines" onclick={handleFinesClick} class="slds-m-left_small"></lightning-button>
+        </div>
+        
+        <!-- Books Section -->
+        <template if:true={showBooks}>
+            <lightning-datatable 
+                key-field="Id"
+                data={books}
+                columns={bookColumns}>
+            </lightning-datatable>
+        </template>
+
+        <!-- Loans Section -->
+        <template if:true={showLoans}>
+            <lightning-datatable 
+                key-field="Id"
+                data={loans}
+                columns={loanColumns}>
+            </lightning-datatable>
+        </template>
+
+        <!-- Fines Section -->
+        <template if:true={showFines}>
+            <lightning-datatable 
+                key-field="Id"
+                data={fines}
+                columns={fineColumns}>
+            </lightning-datatable>
+        </template>
+        
+        <!-- Error Message Section -->
+        <template if:true={errorMessage}>
+            <div class="slds-text-color_error">
+                {errorMessage}
+            </div>
+        </template>
+    </lightning-card>
+</template>

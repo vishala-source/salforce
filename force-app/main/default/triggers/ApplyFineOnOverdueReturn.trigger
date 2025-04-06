@@ -1,18 +1,18 @@
-trigger ApplyFineOnOverdueReturn on Library_Transaction__c (after update) {
+trigger ApplyFineOnOverdueReturn on Loan__c (after update) {
     List<Fine__c> finesToInsert = new List<Fine__c>();
 
     System.debug('Triggered ApplyFineOnOverdueReturn');
 
-    for (Library_Transaction__c libraryTransaction : Trigger.new) {
-        Library_Transaction__c oldTransaction = Trigger.oldMap.get(libraryTransaction.Id);
+    for (Loan__c loan : Trigger.new) {
+        Loan__c oldLoan = Trigger.oldMap.get(loan.Id);
 
         // Ensure status changed from Overdue → Returned
-        if (oldTransaction != null && oldTransaction.Status__c == 'Overdue' && libraryTransaction.Status__c == 'Returned') {
-            System.debug('Processing fine for Transaction ID: ' + libraryTransaction.Id);
+        if (oldLoan != null && oldLoan.Loan_Status__c == 'Overdue' && loan.Loan_Status__c == 'Returned') {
+            System.debug('Processing fine for Loan ID: ' + loan.Id);
 
-            // Ensure Return Date & Due Date are not null
-            if (libraryTransaction.Return_Date__c != null && libraryTransaction.Due_Date__c != null) {
-                Integer overdueDays = Math.max(0, libraryTransaction.Due_Date__c.daysBetween(libraryTransaction.Return_Date__c));
+            // Ensure Return Date is not null
+            if (loan.Return_Date__c != null && loan.Due_Date__c != null) {
+                Integer overdueDays = Math.max(0, loan.Due_Date__c.daysBetween(loan.Return_Date__c));
                 System.debug('Overdue Days Calculated: ' + overdueDays);
 
                 if (overdueDays > 0) {
@@ -20,8 +20,8 @@ trigger ApplyFineOnOverdueReturn on Library_Transaction__c (after update) {
                     System.debug('Fine Applied: ' + fineAmount + ' for ' + overdueDays + ' overdue days');
 
                     Fine__c fine = new Fine__c(
-                        Library_Transaction__c = libraryTransaction.Id, 
-                        User__c = libraryTransaction.Library_Member__c, 
+                        User__c = loan.User__c,
+                        Loan__c = loan.Id, 
                         Fine_Amount__c = fineAmount, 
                         Fine_Status__c = 'Unpaid'
                     );
@@ -33,8 +33,6 @@ trigger ApplyFineOnOverdueReturn on Library_Transaction__c (after update) {
             }
         }
     }
-
-    // added commant for varifying CI/CD deployment 
 
     // Insert fines outside the loop
     if (!finesToInsert.isEmpty()) {
