@@ -3,10 +3,10 @@ name: Deploy Changed Files to Production
 on:
   push:
     branches:
-      - production  # Runs on push to production branch
+      - production  # Trigger on production branch push
     paths:
-      - 'force-app/main/default/**'  # Only trigger when files in this folder are changed
-  workflow_dispatch:  # Allow manual trigger too
+      - 'force-app/main/default/**'  # Trigger only if files in this folder change
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   deploy:
@@ -27,42 +27,41 @@ jobs:
 
       # Step 3: Install Salesforce CLI
       - name: Install Salesforce CLI
-        run: |
-          npm install --global @salesforce/cli
+        run: npm install --global @salesforce/cli
 
-      # Step 4: Authenticate with Salesforce (Production)
+      # Step 4: Authenticate with JWT for Production Org
       - name: Authenticate with JWT
         run: |
           sf org login jwt \
             --instance-url ${{ vars.INSTANCE_URL_PROD }} \
-            --client-id ${{ secrets.SF_CONSUMER_KEY_PROD }} \
+            --client-id ${{ secrets.SF_CONSUMER_SECRET_PROD }} \
             --username ${{ secrets.SF_USERNAME_PROD }} \
             --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY_PROD }}")
 
-      # Step 5: Get the list of changed files
+      # Step 5: Get list of changed files
       - name: Identify changed files
         id: changed_files
         run: |
-          git diff --name-only HEAD~1 > changed_files.txt || echo "No changes found"
+          git diff --name-only HEAD~1 > changed_files.txt
           cat changed_files.txt
 
-      # Step 6: Deploy only changed files
-      - name: Deploy changed files to Production
-        if: success()
+      # Step 6: Deploy only Salesforce metadata
+      - name: Deploy changed metadata files to Production
         run: |
           while IFS= read -r file; do
-            if [[ "$file" == force-app/* && -f "$file" ]]; then
-              echo "Deploying: $file"
+            if [[ "$file" == force-app/* && ( "$file" == *.cls || "$file" == *.xml || "$file" == *.js || "$file" == *.cmp || "$file" == *.app || "$file" == *.page || "$file" == *.component || "$file" == *.aura || "$file" == *.lwc || "$file" == *.trigger ) ]]; then
+              echo "🚀 Deploying: $file"
               sf project deploy start --source-dir "$file" --target-org ${{ secrets.SF_USERNAME_PROD }}
             else
               echo "⏩ Skipping non-deployable file: $file"
             fi
           done < changed_files.txt
+
       # Step 7: Logout from Salesforce
       - name: Logout from Salesforce
         run: |
           sf org logout --target-org ${{ secrets.SF_USERNAME_PROD }} --no-prompt
 
-      # Step 8: Print Success Message
-      - name: Deployment Successful
-        run: echo "✅ Deployment to Production completed successfully!"
+      # Step 8: Done!
+      - name: ✅ Deployment Successful
+        run: echo "🎉 Deployment to Production completed!"
