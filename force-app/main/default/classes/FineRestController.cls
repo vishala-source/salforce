@@ -1,4 +1,4 @@
-public without sharing class FineRestController {
+public with sharing class FineRestController {
     
     @AuraEnabled(cacheable=true)
     public static List<Fine__c> getFinesByUser() {
@@ -12,20 +12,22 @@ public without sharing class FineRestController {
                 return finesList; // Return empty list instead of throwing an error
             }
 
-            // Fetch all loans associated with the logged-in user
-            List<Loan__c> loans = [
-                SELECT Id FROM Loan__c WHERE User__c = :loggedInUserId
+            // Fetch all transactions associated with the logged-in user
+            List<Library_Transaction__c> transactions = [
+                SELECT Id
+                FROM Library_Transaction__c
+                WHERE Library_Member__r.User__c = :loggedInUserId
             ];
 
-            if (loans.isEmpty()) {
-                return finesList; // Return empty list instead of throwing an error
+            if (transactions.isEmpty()) {
+                return finesList;
             }
 
-            // Fetch fines for these 
+            // Fetch fines related to these transactions
             finesList = [
-                SELECT Id, Loan__c, Loan__r.Name, Fine_Amount__c, Fine_Status__c, Fine_Paid_Date__c
+                SELECT Id, Library_Transaction__c, Library_Transaction__r.Name, Fine_Amount__c, Fine_Status__c, Fine_Paid_Date__c
                 FROM Fine__c
-                WHERE Loan__c IN :loans
+                WHERE Library_Transaction__c IN :transactions
             ];
 
         } catch (Exception e) {
