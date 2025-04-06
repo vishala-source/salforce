@@ -21,7 +21,6 @@ public without sharing class FineRestController {
                 return finesList; // No transactions found
             }
 
-            // Fetch fines related to these transactions
             finesList = [
                 SELECT Id, Name, Fine_Amount__c, Fine_Status__c, Fine_Paid_Date__c, 
                        Library_Transaction__c, Library_Transaction__r.Name
