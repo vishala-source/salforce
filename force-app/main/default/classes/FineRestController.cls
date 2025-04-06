@@ -21,7 +21,7 @@ public without sharing class FineRestController {
                 return finesList; // Return empty list instead of throwing an error
             }
 
-            // Fetch fines for these loans
+            // Fetch fines for these 
             finesList = [
                 SELECT Id, Loan__c, Loan__r.Name, Fine_Amount__c, Fine_Status__c, Fine_Paid_Date__c
                 FROM Fine__c
