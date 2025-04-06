@@ -9,7 +9,7 @@ global class LibraryTransactionReminderScheduler implements Schedulable {
             FROM Library_Transaction__c
             WHERE Due_Date__c = :Date.today().addDays(1)
         ];
-        // changes added
+        // changes added to the deployment
 
         if (!transactionsToRemind.isEmpty()) {
             List<Messaging.SingleEmailMessage> emailMessages = new List<Messaging.SingleEmailMessage>();
