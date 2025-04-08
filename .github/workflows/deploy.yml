@@ -6,20 +6,20 @@ on:
       - main  # Runs on push to main branch
     paths:
       - 'force-app/main/default/**'  # Triggers only if files inside this folder change
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository with full history
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensures full commit history is available
 
-      # Step 2: Set up Node.js (if required for Salesforce CLI)
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -33,14 +33,14 @@ jobs:
       # Step 4: Authenticate with Salesforce using JWT
       - name: Authenticate with JWT
         run: |
+          echo "${{ secrets.SF_PRIVATE_KEY }}" > server.key
           sf org login jwt \
             --instance-url ${{ vars.INSTANCE_URL }} \
             --client-id ${{ secrets.SF_CONSUMER_SECRET }} \
             --username ${{ secrets.SF_USERNAME }} \
-            --jwt-key-file <(echo "${{ secrets.SF_PRIVATE_KEY }}")
+            --jwt-key-file server.key
 
-
-      # Step 5: Get the list of changed files
+      # Step 5: Identify changed files
       - name: Identify changed files
         id: changed_files
         run: |
@@ -63,6 +63,6 @@ jobs:
         run: |
           sf org logout --target-org ${{ secrets.SF_USERNAME }} --no-prompt
 
-      # Step 8: Print Success Message
+      # Step 8: Success message
       - name: Deployment Successful
         run: echo "✅ Deployment to Salesforce completed successfully!"
